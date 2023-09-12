@@ -10,7 +10,7 @@ public class Unit : MonoBehaviour
     {
         //Check how close the player is to the target position
         float distanceFromTarget = (targetPosition - transform.position).magnitude;
-        float distanceThreshhold = 0.1f;
+        float distanceThreshhold = 0.2f;
         if(distanceFromTarget > distanceThreshhold)
         {
             Debug.Log("Reached the Target Position");
@@ -22,8 +22,8 @@ public class Unit : MonoBehaviour
         }
 
         //Simple Testing 
-        if (Input.GetKeyDown(KeyCode.T))
-            Move(new Vector3(4, 0, 4));
+        if (Input.GetMouseButtonDown(0))
+            Move(MouseToWorld.GetPosition());
     }
     private void Move(Vector3 targetPosition)
     {
