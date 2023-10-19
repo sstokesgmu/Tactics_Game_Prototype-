@@ -6,6 +6,14 @@ public class Unit : MonoBehaviour
 {
     private Vector3 targetPosition;
 
+    private void Awake()
+    {
+        //Target position should be set based on the distance to the ground
+        // if the level designer places the unit high then for now the code should bring it to the ground
+        targetPosition = transform.position;
+    }
+
+
     private void Update()
     {
         //Check how close the player is to the target position
@@ -20,12 +28,8 @@ public class Unit : MonoBehaviour
             float moveSpeed = 4f;
             transform.position += moveDirection * Time.deltaTime * moveSpeed;
         }
-
-        //Simple Testing 
-        if (Input.GetMouseButtonDown(0))
-            Move(MouseToWorld.GetPosition());
     }
-    private void Move(Vector3 targetPosition)
+    public void Move(Vector3 targetPosition)
     {
         this.targetPosition = targetPosition;
     }
