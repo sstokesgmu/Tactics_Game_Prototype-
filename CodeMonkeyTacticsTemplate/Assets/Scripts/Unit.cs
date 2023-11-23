@@ -4,33 +4,41 @@ using UnityEngine;
 
 public class Unit : MonoBehaviour
 {
+    [SerializeField] private Animator animator;
     private Vector3 targetPosition;
+    //private float movespeed; 
 
     private void Awake()
     {
         //Target position should be set based on the distance to the ground
-        // if the level designer places the unit high then for now the code should bring it to the ground
         targetPosition = transform.position;
     }
-
 
     private void Update()
     {
         //Check how close the player is to the target position
         float distanceFromTarget = (targetPosition - transform.position).magnitude;
         float distanceThreshhold = 0.2f;
-        if(distanceFromTarget > distanceThreshhold)
+        if (distanceFromTarget > distanceThreshhold) // calculate the minimum distance the unit can be from the target
         {
-            Debug.Log("Reached the Target Position");
-            //Move toward target position
             //calcualte the direction
             Vector3 moveDirection = (targetPosition - transform.position).normalized;
-            float moveSpeed = 4f;
-            transform.position += moveDirection * Time.deltaTime * moveSpeed;
+            float tempMoveSpeed = 4f;
+            transform.position += moveDirection * Time.deltaTime * tempMoveSpeed;
+            //Rotate Towards
+            float rotateTowards = 15f;
+            transform.forward = Vector3.Lerp(transform.forward, moveDirection * rotateTowards, Time.deltaTime);
+            //Animators
+            animator.SetBool("isWalking", true);
         }
+        else
+            animator.SetBool("isWalking", false);
     }
+
+    #region Setter Functions
     public void Move(Vector3 targetPosition)
     {
         this.targetPosition = targetPosition;
     }
+    #endregion
 }
