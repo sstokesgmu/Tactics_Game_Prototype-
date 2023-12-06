@@ -11,6 +11,7 @@ GameObject:
   - component: {fileID: 5840901774518921497}
   - component: {fileID: 2770008494936164599}
   - component: {fileID: 7220328871240028580}
+  - component: {fileID: -4272255976098762665}
   m_Layer: 0
   m_Name: Coordinate
   m_TagString: Untagged
@@ -127,8 +128,8 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 4
-  m_fontSizeBase: 4
+  m_fontSize: 1.5
+  m_fontSizeBase: 1.5
   m_fontWeight: 400
   m_enableAutoSizing: 0
   m_fontSizeMin: 18
@@ -172,3 +173,16 @@ MonoBehaviour:
   m_hasFontAssetChanged: 0
   m_renderer: {fileID: 2770008494936164599}
   m_maskType: 0
+--- !u!114 &-4272255976098762665
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4045955668133314259}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 747bced5204c4904cb3c17118ee5aa87, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  textMeshPro: {fileID: 7220328871240028580}

@@ -1,44 +1,103 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
 public class Unit : MonoBehaviour
 {
-    [SerializeField] private Animator animator;
-    private Vector3 targetPosition;
-    //private float movespeed; 
+    private const int MAX_ACTION_POINTS = 2;
+
+    public static event EventHandler OnAnyActionPointChanged; 
+
+
+    private GridPosition gridPosition;
+    private MoveAction moveAction;
+    private SpinAction spinAction;
+    private BaseAction[] baseActionArray;
+    private int actionPoints = MAX_ACTION_POINTS;
 
     private void Awake()
     {
-        //Target position should be set based on the distance to the ground
-        targetPosition = transform.position;
+        baseActionArray = GetComponents<BaseAction>();
+        moveAction = GetComponent<MoveAction>();
+        spinAction = GetComponent<SpinAction>();
+
+    }
+
+    private void Start()
+    {
+        //Delegates 
+        TurnSystem.Instance.OnTurnChanged += TurnSystem_OnTurnChanged;
+
+
+        gridPosition = LevelGrid.Instance.GetGridPosition(transform.position);
+        LevelGrid.Instance.AddUnitAtGridPosition(gridPosition, this);
     }
 
     private void Update()
     {
-        //Check how close the player is to the target position
-        float distanceFromTarget = (targetPosition - transform.position).magnitude;
-        float distanceThreshhold = 0.2f;
-        if (distanceFromTarget > distanceThreshhold) // calculate the minimum distance the unit can be from the target
+        //Check if Unit change Position
+        GridPosition newGridPosition = LevelGrid.Instance.GetGridPosition(transform.position);
+        if(newGridPosition != gridPosition)
         {
-            //calcualte the direction
-            Vector3 moveDirection = (targetPosition - transform.position).normalized;
-            float tempMoveSpeed = 4f;
-            transform.position += moveDirection * Time.deltaTime * tempMoveSpeed;
-            //Rotate Towards
-            float rotateTowards = 15f;
-            transform.forward = Vector3.Lerp(transform.forward, moveDirection * rotateTowards, Time.deltaTime);
-            //Animators
-            animator.SetBool("isWalking", true);
+            LevelGrid.Instance.UnitMovedGridPosition(this, gridPosition, newGridPosition);
+            gridPosition = newGridPosition;
         }
-        else
-            animator.SetBool("isWalking", false);
     }
 
-    #region Setter Functions
-    public void Move(Vector3 targetPosition)
+    #region Getter Functions
+    public MoveAction GetMoveAction()
     {
-        this.targetPosition = targetPosition;
+        return moveAction;
+    }
+
+    public SpinAction GetSpinAction() 
+    {
+        return spinAction;
+    }
+
+    public GridPosition GetGridPosition()
+    {
+        return gridPosition; 
+    }
+
+    public BaseAction[] GetBaseActionArray()
+    {
+        return baseActionArray;
+    }
+    public int GetActionPoints()
+    {
+        return actionPoints;
     }
     #endregion
+
+    private void TurnSystem_OnTurnChanged(object sender, EventArgs e)
+    {
+        actionPoints = MAX_ACTION_POINTS;
+        OnAnyActionPointChanged?.Invoke(this, EventArgs.Empty);
+    }
+
+
+    public bool TryToSpendActionPoints(BaseAction action)
+    {
+        if(CanSpendActionPoints(action))
+        {
+            SpendActionPoints(action.GetActionPointsCost());
+            return true;
+        }
+        return false;
+    }
+
+    public bool CanSpendActionPoints(BaseAction action)
+    {
+        return actionPoints >= action.GetActionPointsCost();
+    }
+
+    private void SpendActionPoints(int amount)
+    {
+        actionPoints -= amount;
+        OnAnyActionPointChanged?.Invoke(this, EventArgs.Empty);
+    }
+
+
 }
