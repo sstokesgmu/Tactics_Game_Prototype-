@@ -6,9 +6,11 @@ using UnityEngine.EventSystems;
 
 public class MoveAction : BaseAction
 { 
-    [SerializeField] private Animator unitAnimator;
     [SerializeField] private int maxHorMoveDistance = 4;
     [SerializeField] private int maxVertMoveDistance = 1;
+
+    public event EventHandler OnStartMoving;
+    public event EventHandler OnStopMoving;
 
     private Vector3 targetPosition;
  
@@ -33,24 +35,17 @@ public class MoveAction : BaseAction
             float stoppingDistance = .2f;
             if (Vector3.Distance(transform.position, targetPosition) > stoppingDistance)
             {
-
                 float moveSpeed = 4f;
                 transform.position += moveDirection * moveSpeed * Time.deltaTime;
-
-
-                //Animator
-                unitAnimator.SetBool("isWalking", true);
             }
             else
             {
-                unitAnimator.SetBool("isWalking", false);
-                isActive = false;
-                //Call Delegate
-                onActionComplete();
+                OnStopMoving?.Invoke(this, EventArgs.Empty);
+                ActionComplete();
             }
                
             //Rotate Towards 
-            float rotationSpeed = 4f;
+            float rotationSpeed = 7f;
             transform.forward = Vector3.Lerp(transform.forward, moveDirection, rotationSpeed * Time.deltaTime);
         }
      
@@ -58,10 +53,10 @@ public class MoveAction : BaseAction
 
     public override void TakeAction(GridPosition position, Action onActionComplete)
     {
-        //Set Delegate
-        this.onActionComplete = onActionComplete;
+
+        ActionStart(onActionComplete);
         this.targetPosition = LevelGrid.Instance.GetWorldPosition(position);
-        isActive = true;
+        OnStartMoving?.Invoke(this, EventArgs.Empty);
     }
     
     public override bool IsValidActionGridPosition(GridPosition gridPosition)
@@ -74,9 +69,22 @@ public class MoveAction : BaseAction
     {
         List<GridPosition> validGridPositionList = new List<GridPosition>();
 
-        GridPosition unitGridPosition = unit.GetGridPosition();
 
-        
+        // Check if the unit is null or has been destroyed
+        if (unit == null)
+        {
+            // Handle the case where the unit is null or destroyed
+            // For example, you might return an empty list or log a warning
+            Debug.LogWarning("Unit is null or has been destroyed.");
+            return validGridPositionList;
+        }
+
+        //Note we should fix this to remove going through two pass throughs it doesn't work on initialization
+
+        GridPosition unitGridPosition = LevelGrid.Instance.GetGridPosition(unit.transform.position);
+
+        //GridPosition unitGridPosition = unit.GetGridPosition();
+
         for (int x = -(maxHorMoveDistance); x <= maxHorMoveDistance; x++)
         {
             for (int z = -(maxHorMoveDistance); z <= maxHorMoveDistance; z++)
@@ -107,5 +115,18 @@ public class MoveAction : BaseAction
             }
         }
         return validGridPositionList;
+    }
+
+
+    public override EnemyAIAction GetEnemyAIAction(GridPosition gridPosition)
+    {
+       int targetCountAtGridPosition =
+            unit.GetShootAction().GetTargetCountAtPosition(gridPosition);
+
+        return new EnemyAIAction
+        {
+            gridPosition = gridPosition,
+            actionValue = targetCountAtGridPosition * 10,
+        };
     }
 }

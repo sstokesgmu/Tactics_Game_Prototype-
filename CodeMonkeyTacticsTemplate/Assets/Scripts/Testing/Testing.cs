@@ -5,6 +5,7 @@ using UnityEngine;
 public class Testing : MonoBehaviour
 {
    [SerializeField] private Unit unit;
+    [SerializeField] private Spawner spawner;
 
     private void Start()
     {
@@ -15,9 +16,11 @@ public class Testing : MonoBehaviour
     {
         if(Input.GetKeyDown(KeyCode.T))
         {
-            GridSystemVisual.Instance.HideAllGridPositions();
-            GridSystemVisual.Instance.ShowAllGridPositions(
-                unit.GetMoveAction().GetValidActionGridPositionList());
+            Debug.Log("Called");
+     
+            //GridSystemVisual.Instance.HideAllGridPositions();
+            //GridSystemVisual.Instance.ShowAllGridPositions(
+            //    unit.GetMoveAction().GetValidActionGridPositionList());
 
         }
     }

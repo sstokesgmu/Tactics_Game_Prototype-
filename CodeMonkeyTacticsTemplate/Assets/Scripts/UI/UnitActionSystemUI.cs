@@ -9,7 +9,9 @@ public class UnitActionSystemUI : MonoBehaviour
 {
     [SerializeField] private Transform actionButtonPrefab;
     [SerializeField] private Transform actionButtonContainer;
+    [SerializeField] private TextMeshProUGUI unitNameUI;
     [SerializeField] private TextMeshProUGUI actionPointsUI;
+    [SerializeField] private Image healthbarImage;
 
     private List<ActionButtonUI> actionButtonUILists;
 
@@ -26,9 +28,15 @@ public class UnitActionSystemUI : MonoBehaviour
         UnitActionSystem.Instance.OnActionStarted += UnitActionSystem_OnActionStarted;
         TurnSystem.Instance.OnTurnChanged += TurnSystem_OnTurnChanged;
         Unit.OnAnyActionPointChanged += Unit_OnAnyActionPointsChanged;
+        HealthSystem.OnDamagedPlayer += HealthSystem_OnDamagedPlayer;
+        HealthSystem.OnHealed += HealthSystem_OnHeal;
+
+        
 
         CreateUnitActionButtons();
         UpdateSelectedVisual();
+        UpdateUnitName();
+        UpdateActionPoints();
     }
 
     private void CreateUnitActionButtons()
@@ -56,10 +64,22 @@ public class UnitActionSystemUI : MonoBehaviour
             actionUI.UpdateSelectedVisual();
         }
     }
+
+    private void UpdateUnitName()
+    {
+        Unit selectedUnit = UnitActionSystem.Instance.GetSelectedUnit();
+        if(selectedUnit != null) 
+             unitNameUI.text = selectedUnit.name.ToUpper();
+    }
+
+    private void UpdateHealthBar(HealthSystem healthSystem)
+    {
+        healthbarImage.fillAmount = healthSystem.GetHealthNormalized();
+    }
     private void UpdateActionPoints()
     {
        Unit selectedUnit = UnitActionSystem.Instance.GetSelectedUnit();
-        actionPointsUI.text = "Action Points: " + selectedUnit.GetActionPoints();
+        actionPointsUI.text = "AP: " + selectedUnit.GetActionPoints() + " / " + selectedUnit.GetMaxActionPoints();
     }
 
 
@@ -69,6 +89,7 @@ public class UnitActionSystemUI : MonoBehaviour
         CreateUnitActionButtons();
         UpdateSelectedVisual();
         UpdateActionPoints();
+        UpdateUnitName();
     }
     private void UnitActionSystem_OnSelectedActionChanged(object sender, EventArgs e)
     {
@@ -81,11 +102,27 @@ public class UnitActionSystemUI : MonoBehaviour
     private void TurnSystem_OnTurnChanged(object sender, EventArgs e)
     {
         UpdateActionPoints();
+        UpdateUnitName();
     }
 
     private void Unit_OnAnyActionPointsChanged(object sender, EventArgs e)
     {
         UpdateActionPoints();
+    }
+    private void HealthSystem_OnDamagedPlayer(object sender, EventArgs e)
+    {
+        // Attempt to cast sender to HealthSystem, returns null if not possible
+        HealthSystem healthSystem = sender as HealthSystem;
+        if (healthSystem != null)
+             UpdateHealthBar(healthSystem);
+    }
+
+    private void HealthSystem_OnHeal (object sender, EventArgs e)
+    {
+        // Attempt to cast sender to HealthSystem, returns null if not possible
+        HealthSystem healthSystem = sender as HealthSystem;
+        if (healthSystem != null)
+            UpdateHealthBar(healthSystem);
     }
     #endregion
 

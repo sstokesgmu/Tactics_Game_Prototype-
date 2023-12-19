@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -12,9 +13,11 @@ public class LevelGrid : MonoBehaviour
     public int height = 0;
 
     [SerializeField] private Transform gridDebugObjectPrefab;
-    [SerializeField] private CapsuleCollider basicCharacter;
-
+    [SerializeField] private Transform unitPrefab;
+    private CapsuleCollider basicCharacter;
     private GridSystem gridSystem;
+
+    public event EventHandler OnUnitMovedGridPosition;
     private void Awake()
     {
         if (Instance != null)
@@ -27,7 +30,8 @@ public class LevelGrid : MonoBehaviour
 
         //We should get the height of the basic character
         //for some reason I have to use an actual in scene object
-        int characterHeight = GetCharacterHeight(basicCharacter);
+        basicCharacter = unitPrefab.GetComponent<CapsuleCollider>();
+        int characterHeight = 5;//GetCharacterHeight(basicCharacter);
         Vector3 cellsize = new Vector3(2, characterHeight, 2);
         gridSystem = new GridSystem(length, width, height, cellsize, this.transform.position);
         gridSystem.CreateDebugObjects(gridDebugObjectPrefab);
@@ -62,19 +66,26 @@ public class LevelGrid : MonoBehaviour
     public void UnitMovedGridPosition(Unit unit, GridPosition fromGridPosition, GridPosition toGridPosition)
     {
         RemoveUnitAtGridPosition(fromGridPosition, unit);
-
         AddUnitAtGridPosition(toGridPosition, unit);
+
+        OnUnitMovedGridPosition?.Invoke(this, EventArgs.Empty);
     }
 
-    public  bool HasAnyObjectOnGridPosition(GridPosition gridPosition)
+    public bool HasAnyObjectOnGridPosition(GridPosition gridPosition)
     {
         GridObject gridObject = gridSystem.GetGridObjet(gridPosition);
         return gridObject.HasAnyUnit();
     }
 
     public int GetWidth() => gridSystem.GetWidth();
-    public int GetLength() => gridSystem.GetLength();
     public int GetHeight() => gridSystem.GetHeight();
+    public int GetLength() => gridSystem.GetLength();   
+
+    public Unit GetUnitAtGridPosition(GridPosition gridPosition)
+    {
+        GridObject gridObject = gridSystem.GetGridObjet(gridPosition);
+        return gridObject.GetUnit();
+    }
 
 
     //Pass through Functions
@@ -82,6 +93,14 @@ public class LevelGrid : MonoBehaviour
 
     public Vector3 GetWorldPosition(GridPosition gridPosition) => gridSystem.GetWorldPosition(gridPosition);
 
+    public List<GridPosition> GetGridPositions(List<Vector3> worldPositions)
+        => gridSystem.GetGridPositionsFromList(worldPositions);
+
+    public List<Vector3> GetWorldPositionFromList(List<GridPosition> gridPositions)
+        => gridSystem.GetWorldPositionsFromList(gridPositions);
+
     public bool IsValidGridPosition(GridPosition gridPosition) => gridSystem.IsValidGridPosition(gridPosition);
+
+    public List<GridPosition> GetValidGridPositions() => gridSystem.GetValidGridPositions();
     #endregion
 }

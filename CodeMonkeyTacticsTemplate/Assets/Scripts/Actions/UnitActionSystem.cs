@@ -22,6 +22,7 @@ public class UnitActionSystem : MonoBehaviour
     public event EventHandler OnSelectedActionChanged;
     public event EventHandler<bool> OnBusyChanged;
     public event EventHandler OnActionStarted;
+    public event EventHandler OnHeal;
 
     [SerializeField] private Unit selectedUnit;
     [SerializeField] private LayerMask unitLayer;
@@ -49,6 +50,8 @@ public class UnitActionSystem : MonoBehaviour
     private void Update()
     {
         if (isBusy)
+            return;
+        if (!TurnSystem.Instance.GetIsPlayerTurn())
             return;
         if (EventSystem.current.IsPointerOverGameObject())
             return;
@@ -84,7 +87,17 @@ public class UnitActionSystem : MonoBehaviour
                     SetBusy();
                     spinAction.TakeAction(ClearBusy);
                     OnActionStarted?.Invoke(this, EventArgs.Empty);
-                    break;                   
+                    break;
+                case ShootAction shootAction:
+                    if (!shootAction.IsValidActionGridPosition(mouseGridPosition))
+                        return;
+                    if (!selectedUnit.TryToSpendActionPoints(shootAction))
+                        return;
+                    SetBusy();
+                    shootAction.TakeAction(mouseGridPosition, ClearBusy);
+                    OnActionStarted?.Invoke(this, EventArgs.Empty);
+                    break;
+
             }
         }
     }
@@ -99,6 +112,15 @@ public class UnitActionSystem : MonoBehaviour
             {
                 if (hit.transform.TryGetComponent<Unit>(out Unit unit))
                 {
+                    //Cannot select if
+                    //Unit is already Selected 
+                    if (unit == selectedUnit)
+                        return false;
+                    //is enemy Unit
+                    if (unit.IsEnemyUnit())
+                        return false;
+
+                    //Select Unit
                     SetSelectedUnit(unit);
                     return true;
                 }
@@ -124,13 +146,14 @@ public class UnitActionSystem : MonoBehaviour
     private void SetSelectedUnit(Unit unit)
     {
         selectedUnit = unit;
-        SetSelectedAction(unit.GetMoveAction()); 
+        SetSelectedAction(unit.GetMoveAction());
         //Null Check
         OnSelectedUnitChanged?.Invoke(this, EventArgs.Empty);
     }
     public void SetSelectedAction(BaseAction action)
     {
         selectedAction = action;
+       
         OnSelectedActionChanged?.Invoke(this, EventArgs.Empty);
     }
 

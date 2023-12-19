@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using Unity.VisualScripting;
 using UnityEngine;
 
 public class GridSystem 
@@ -43,6 +44,22 @@ public class GridSystem
                && gridPosition.x < width && gridPosition.z < length && gridPosition.y < height; 
     }
 
+
+    public List<GridPosition> GetValidGridPositions()
+    {
+        //what makes a grid position valid
+        List<GridPosition> validGridPositionList = new List<GridPosition>();
+        //1. no object is on the grid position
+        foreach (GridObject gridObject in gridObjectArray)
+        {
+            //Does not have a unit on it
+            if (gridObject.HasAnyUnit())
+                continue;
+            validGridPositionList.Add(gridObject.GetGridPosition());
+        }
+        return validGridPositionList;
+    }
+
     public int GetWidth()
     {
         return width;
@@ -75,6 +92,37 @@ public class GridSystem
         Mathf.RoundToInt((worldPosition.y - startPos.y) / cellSize.y),
         Mathf.RoundToInt((worldPosition.z - startPos.z) / cellSize.z)
         );
+    }
+
+    //Convert Grid Position to World Position List
+    public List<Vector3> GetWorldPositionsFromList(List<GridPosition> gridPosition)
+    {
+        List<Vector3> posList = new List<Vector3>();    
+        foreach (GridPosition gridPos in gridPosition )
+        {
+
+            posList.Add(new Vector3(
+              gridPos.x * cellSize.x + startPos.x,
+              gridPos.y * cellSize.y + startPos.y,
+              gridPos.z * cellSize.z + startPos.z
+              ));
+        }
+        return posList;
+    }
+
+    // Convert World position to Grid position List
+    public List<GridPosition> GetGridPositionsFromList(List<Vector3> worldPositions)
+    {
+        List<GridPosition> gridPosList = new List<GridPosition>();
+        foreach (Vector3 worldPos in worldPositions)
+        {
+            gridPosList.Add(new GridPosition(
+                Mathf.RoundToInt((worldPos.x - startPos.x) / cellSize.x),
+                Mathf.RoundToInt((worldPos.y - startPos.y) / cellSize.y),
+                Mathf.RoundToInt((worldPos.z - startPos.z) / cellSize.z)
+                ));
+        }
+        return gridPosList;
     }
 
     public void CreateDebugObjects(Transform debugPrefab)
