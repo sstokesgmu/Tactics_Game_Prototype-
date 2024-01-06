@@ -49,9 +49,6 @@ public class UnitManager : MonoBehaviour
     private void Unit_OnAnyUnitSpawned(object sender, EventArgs e)
     {
         Unit unit = sender as Unit;
-
-        Debug.Log(unit + " spawned");
-
         unitList.Add(unit);
         if (unit.IsEnemyUnit())
             enemyUnitList.Add(unit);
@@ -60,9 +57,7 @@ public class UnitManager : MonoBehaviour
             friendlyUnitList.Add(unit);
             playersSpawned = true;
         }
-            
     }
-    
     private void Unit_OnAnyUnitKilled(object sender, EventArgs e)
     {
 

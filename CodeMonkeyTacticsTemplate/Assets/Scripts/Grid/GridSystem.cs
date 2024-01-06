@@ -2,18 +2,20 @@ using System.Collections;
 using System.Collections.Generic;
 using Unity.VisualScripting;
 using UnityEngine;
+using System;
 
-public class GridSystem 
+public class GridSystem<TGridObject> 
 {
     private int width;
     private int length;
     private float height;
     private Vector3 cellSize;
     private Vector3 startPos;
-    private GridObject[,,] gridObjectArray;
+    private TGridObject[,,] gridObjectArray;
 
     //Creating Constructors
-    public GridSystem(int width, int length, int height, Vector3 cellSize, Vector3 startingPos)
+    public GridSystem(int width, int length, int height, Vector3 cellSize, Vector3 startingPos, 
+        Func<GridSystem<TGridObject>, GridPosition, TGridObject> createGridObject)
     {
         this.width = width;//x
         this.height = height;// y
@@ -22,7 +24,7 @@ public class GridSystem
         this.cellSize = cellSize;
         this.startPos = startingPos;
 
-        gridObjectArray = new GridObject[width,height,length];
+        gridObjectArray = new TGridObject[width,height,length];
         //Loop through the width and length
         for (int x = 0; x < width; x++)
         {
@@ -31,7 +33,7 @@ public class GridSystem
                 for (int y = 0; y < height; y++)
                 {
                     GridPosition gridPosition = new GridPosition(x, y, z);
-                    gridObjectArray[x,y,z] = new GridObject(this, gridPosition);
+                    gridObjectArray[x,y,z] = createGridObject(this, gridPosition);
                 }
             }
         }
@@ -47,17 +49,17 @@ public class GridSystem
 
     public List<GridPosition> GetValidGridPositions()
     {
-        //what makes a grid position valid
-        List<GridPosition> validGridPositionList = new List<GridPosition>();
-        //1. no object is on the grid position
-        foreach (GridObject gridObject in gridObjectArray)
-        {
-            //Does not have a unit on it
-            if (gridObject.HasAnyUnit())
-                continue;
-            validGridPositionList.Add(gridObject.GetGridPosition());
-        }
-        return validGridPositionList;
+        ////what makes a grid position valid
+        //List<GridPosition> validGridPositionList = new List<GridPosition>();
+        ////1. no object is on the grid position
+        //foreach (TGridObject gridObject in gridObjectArray)
+        //{
+        //    //Does not have a unit on it
+        //    if (gridObject.HasAnyUnit())
+        //        continue;
+        //    validGridPositionList.Add(gridObject.GetGridPosition());
+        //}
+        return null;
     }
 
     public int GetWidth()
@@ -71,6 +73,14 @@ public class GridSystem
     public int GetHeight()
     {
         return (int)height;
+    }
+    public Vector3 GetCellSize() 
+    {
+        return cellSize;
+    }
+    public Vector3 GetStartingPos()
+    {
+        return startPos;
     }
 
  
@@ -136,13 +146,13 @@ public class GridSystem
                     GridPosition gridPosition = new GridPosition(x, y, z);
                     Transform debugTransform = GameObject.Instantiate(debugPrefab, GetWorldPosition(gridPosition), debugPrefab.rotation);
                     GridDebugObject gridObject = debugTransform.GetComponent<GridDebugObject>();
-                    gridObject.SetGridObject(GetGridObjet(gridPosition));
+                    gridObject.SetGridObject(GetGridObjet(gridPosition) as GridObject);
                 }
             }
         }
     }
 
-    public GridObject GetGridObjet(GridPosition gridPosition)
+    public TGridObject GetGridObjet(GridPosition gridPosition)
     {
         return gridObjectArray[gridPosition.x, gridPosition.y, gridPosition.z];
     }

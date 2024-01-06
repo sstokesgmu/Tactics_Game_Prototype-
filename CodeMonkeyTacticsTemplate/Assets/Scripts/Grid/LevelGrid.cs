@@ -8,14 +8,14 @@ public class LevelGrid : MonoBehaviour
     public static LevelGrid Instance { get; private set; }
 
     [Header("Grid Properties")]
-    public int length = 0;
-    public int width = 0;
-    public int height = 0;
+    [SerializeField] private int length = 0;
+    [SerializeField] private int width = 0;
+    [SerializeField] private int height = 0;
 
     [SerializeField] private Transform gridDebugObjectPrefab;
     [SerializeField] private Transform unitPrefab;
     private CapsuleCollider basicCharacter;
-    private GridSystem gridSystem;
+    private GridSystem<GridObject> gridSystem;
 
     public event EventHandler OnUnitMovedGridPosition;
     private void Awake()
@@ -33,7 +33,10 @@ public class LevelGrid : MonoBehaviour
         basicCharacter = unitPrefab.GetComponent<CapsuleCollider>();
         int characterHeight = 5;//GetCharacterHeight(basicCharacter);
         Vector3 cellsize = new Vector3(2, characterHeight, 2);
-        gridSystem = new GridSystem(length, width, height, cellsize, this.transform.position);
+        gridSystem = new GridSystem<GridObject>(length, width, height, cellsize, this.transform.position,
+            (GridSystem<GridObject> g, GridPosition gridPosition) => new GridObject(g, gridPosition));
+
+
         gridSystem.CreateDebugObjects(gridDebugObjectPrefab);
     }
 
@@ -79,7 +82,9 @@ public class LevelGrid : MonoBehaviour
 
     public int GetWidth() => gridSystem.GetWidth();
     public int GetHeight() => gridSystem.GetHeight();
-    public int GetLength() => gridSystem.GetLength();   
+    public int GetLength() => gridSystem.GetLength();
+    public Vector3 GetCellSize() => gridSystem.GetCellSize();
+    public Vector3 GetStartPos() => gridSystem.GetStartingPos();
 
     public Unit GetUnitAtGridPosition(GridPosition gridPosition)
     {

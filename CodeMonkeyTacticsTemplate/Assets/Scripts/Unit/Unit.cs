@@ -16,9 +16,6 @@ public class Unit : MonoBehaviour
 
     private GridPosition gridPosition;
     private HealthSystem healthSystem;
-    private MoveAction moveAction;
-    private SpinAction spinAction;
-    private ShootAction shootAction;
     private BaseAction[] baseActionArray;
 
 
@@ -28,16 +25,11 @@ public class Unit : MonoBehaviour
     private void Awake()
     {
         baseActionArray = GetComponents<BaseAction>();
-        moveAction = GetComponent<MoveAction>();
-        spinAction = GetComponent<SpinAction>();
-        shootAction = GetComponent<ShootAction>();
         healthSystem = GetComponent<HealthSystem>();
     }
 
     private void Start()
     {
-        
-
         //Delegates 
         gridPosition = LevelGrid.Instance.GetGridPosition(transform.position);
         LevelGrid.Instance.AddUnitAtGridPosition(gridPosition, this);
@@ -61,22 +53,19 @@ public class Unit : MonoBehaviour
         }
     }
 
+
     #region Getter Functions
-    public MoveAction GetMoveAction()
+    public T GetAction<T>() where T : BaseAction
     {
-        return moveAction;
+        foreach (BaseAction action in baseActionArray)
+        {
+            if (action is T)
+            {
+                return (T)action;
+            }
+        }
+        return null;
     }
-
-    public SpinAction GetSpinAction()
-    {
-        return spinAction;
-    }
-
-    public ShootAction GetShootAction()
-    {
-        return shootAction;
-    }
-
     public GridPosition GetGridPosition()
     {
         return gridPosition;
