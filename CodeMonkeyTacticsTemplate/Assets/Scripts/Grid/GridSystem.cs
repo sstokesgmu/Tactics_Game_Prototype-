@@ -8,44 +8,36 @@ public class GridSystem<TGridObject>
 {
     private int width;
     private int length;
-    private float height;
+    private int height;
     private Vector3 cellSize;
     private Vector3 startPos;
     private TGridObject[,,] gridObjectArray;
 
-    //Creating Constructors
     public GridSystem(int width, int length, int height, Vector3 cellSize, Vector3 startingPos, 
-        Func<GridSystem<TGridObject>, GridPosition, TGridObject> createGridObject)
-    {
+        Func<GridSystem<TGridObject>, GridPosition, TGridObject> createGridObject) {
         this.width = width;//x
-        this.height = height;// y
+        this.height = height + 1;// y
         this.length = length;// z
-
         this.cellSize = cellSize;
         this.startPos = startingPos;
-
-        gridObjectArray = new TGridObject[width,height,length];
-        //Loop through the width and length
-        for (int x = 0; x < width; x++)
-        {
-            for (int z = 0;  z < length; z++)
-            {
-                for (int y = 0; y < height; y++)
-                {
+        gridObjectArray = new TGridObject[width, this.height ,length];
+        //Loop through the width, length, and height and create a grid position and grid object add the the array location
+        for (int x = 0; x < width; x++) {
+            for (int z = 0;  z < length; z++) {
+                for (int y = 0; y < height; y++) {
                     GridPosition gridPosition = new GridPosition(x, y, z);
                     gridObjectArray[x,y,z] = createGridObject(this, gridPosition);
                 }
             }
         }
     }
-
     //Grid Validation
-    public bool IsValidGridPosition(GridPosition gridPosition)
-    {
+    public bool IsValidGridPosition(GridPosition gridPosition) {
         return gridPosition.x >= 0 && gridPosition.z >= 0 && gridPosition.y >= 0
-               && gridPosition.x < width && gridPosition.z < length && gridPosition.y < height; 
-    }
-
+               && gridPosition.x < width && gridPosition.z < length && gridPosition.y < height; }
+    //Get Grid Position
+    public TGridObject GetGridObjet(GridPosition gridPosition) {
+        return gridObjectArray[gridPosition.x, gridPosition.y, gridPosition.z]; }
 
     public List<GridPosition> GetValidGridPositions()
     {
@@ -61,29 +53,6 @@ public class GridSystem<TGridObject>
         //}
         return null;
     }
-
-    public int GetWidth()
-    {
-        return width;
-    }
-    public int GetLength()
-    {
-        return length;
-    }
-    public int GetHeight()
-    {
-        return (int)height;
-    }
-    public Vector3 GetCellSize() 
-    {
-        return cellSize;
-    }
-    public Vector3 GetStartingPos()
-    {
-        return startPos;
-    }
-
- 
     //Convert Grid Position to World Position with height included
     public Vector3 GetWorldPosition(GridPosition gridPos)
     {
@@ -134,6 +103,12 @@ public class GridSystem<TGridObject>
         }
         return gridPosList;
     }
+    
+    public int GetWidth() => width;
+    public int GetLength() => length;
+    public int GetHeight() => height;
+    public Vector3 GetCellSize() => cellSize;
+    public Vector3 GetStartingPos() => startPos;
 
     public void CreateDebugObjects(Transform debugPrefab)
     {
@@ -150,10 +125,5 @@ public class GridSystem<TGridObject>
                 }
             }
         }
-    }
-
-    public TGridObject GetGridObjet(GridPosition gridPosition)
-    {
-        return gridObjectArray[gridPosition.x, gridPosition.y, gridPosition.z];
     }
 }

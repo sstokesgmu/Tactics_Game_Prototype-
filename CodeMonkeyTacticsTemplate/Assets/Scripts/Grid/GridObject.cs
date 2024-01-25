@@ -11,7 +11,7 @@ public class GridObject
     {
         this.gridSystem = gridSystem;
         this.gridPosition = gridPosition;
-        unitList = new List<Unit>();
+      //  unitList = new List<Unit>();
     }
 
     public override string ToString()
