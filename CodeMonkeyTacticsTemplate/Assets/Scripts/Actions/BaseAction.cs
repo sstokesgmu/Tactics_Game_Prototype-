@@ -18,10 +18,11 @@ public abstract class BaseAction : MonoBehaviour
     public virtual void TakeAction(GridPosition position, Action onActionComplete) { }
 
 
-
+  
     //Grid Validation
     public virtual bool IsValidActionGridPosition(GridPosition gridPosition)
     {
+
         List<GridPosition> validGridPositionList = GetValidActionGridPositionList();
         return validGridPositionList.Contains(gridPosition);
     }

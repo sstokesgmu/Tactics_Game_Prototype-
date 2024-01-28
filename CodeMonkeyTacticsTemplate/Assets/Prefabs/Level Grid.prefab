@@ -44,10 +44,20 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2c0536906a9fdcd488023dd10062290a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  length: 14
-  width: 14
-  height: 1
-  gridDebugObjectPrefab: {fileID: 5840901774518921497, guid: d844b0c860bbfe048b1728886877cb76,
-    type: 3}
+  girdDimensions:
+    length: 0
+    width: 0
+    height: 1
+  cellDimensions:
+    length: 0
+    width: 0
+    height: 0
+  gridLength: 0
+  gridWidth: 0
+  gridHeight: 1
+  cellSize: {x: 0, y: 0, z: 0}
   unitPrefab: {fileID: 4246955507477471790, guid: f02a6a00eb43eae43a0bcdf3751f4061,
+    type: 3}
+  useCharacterHeight: 0
+  gridDebugObjectPrefab: {fileID: 5840901774518921497, guid: d844b0c860bbfe048b1728886877cb76,
     type: 3}
