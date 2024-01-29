@@ -8,7 +8,7 @@ namespace Grid
 {
     [System.Serializable] public struct GridDimensions {
         public int length, width;
-        [Tooltip("The height of the grid. Must be set to 1 or higher, where 1 corresponds to a single level if the grid utilizes height; increase this number.")]
+        [Tooltip("The height of the grid. Increase this number to increase the height of the grid.")]
         public int height; }
     [System.Serializable] public struct CellDimensions {
         [Tooltip("The size to a grid cell in a particular axis")]
@@ -17,20 +17,12 @@ namespace Grid
     public class LevelGrid : MonoBehaviour {
         public static LevelGrid Instance { get; private set; }
         [Header("Grid Properties")]
-        public GridDimensions girdDimensions;
+        public GridDimensions gridDimensions; 
         public CellDimensions cellDimensions;
-        [SerializeField] private int gridLength = 0;
-        [SerializeField] private int gridWidth = 0;
-        [SerializeField] private int gridHeight = 1;
-        [SerializeField] private Vector3 cellSize;
-        
-        
+        [SerializeField] private Transform gridDebugObjectPrefab;
         [SerializeField] private Transform unitPrefab;
         [SerializeField] private bool useCharacterHeight = false;
 
-        
-        [SerializeField] private Transform gridDebugObjectPrefab;
-        
         private CapsuleCollider basicCharacter;
         private GridSystem<GridObject> gridSystem;
         public event EventHandler OnUnitMovedGridPosition;
@@ -45,8 +37,8 @@ namespace Grid
             if (unitPrefab != null) {
                 basicCharacter = unitPrefab.GetComponent<CapsuleCollider>();
                 if(useCharacterHeight)
-                    cellSize.y = GetCharacterHeight(basicCharacter); }
-            gridSystem = new GridSystem<GridObject>(gridLength, gridWidth, gridHeight, cellSize, this.transform.position,
+                    cellDimensions.y = GetCharacterHeight(basicCharacter); }
+            gridSystem = new GridSystem<GridObject>(gridDimensions, cellDimensions, this.transform.position,
             (GridSystem<GridObject> g, GridPosition gridPosition) => new GridObject(g, gridPosition));
             gridSystem.CreateDebugObjects(gridDebugObjectPrefab);
         }
@@ -79,9 +71,9 @@ namespace Grid
             public int GetWidth() => gridSystem.GetWidth();
             public int GetHeight() => gridSystem.GetHeight();
             public int GetLength() => gridSystem.GetLength();
-            public Vector3 GetCellSize() => gridSystem.GetCellSize();
+            public GridDimensions GetGridDimensions() => gridSystem.GetGridDimensions();
+            public CellDimensions GetCellSize() => gridSystem.GetCellSize();
             public Vector3 GetStartPos() => gridSystem.GetStartingPos();
-
             public Unit GetUnitAtGridPosition(GridPosition gridPosition) {
                 GridObject gridObject = gridSystem.GetGridObjet(gridPosition);
                 return gridObject.GetUnit();

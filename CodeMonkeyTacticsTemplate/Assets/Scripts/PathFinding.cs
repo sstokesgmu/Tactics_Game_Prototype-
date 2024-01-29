@@ -11,19 +11,19 @@ public class PathFinding : MonoBehaviour
 
 
     private GridSystem<PathNode> gridSystem;
-    private int width, length, height;
-    private Vector3 cellsize;
+    private GridDimensions gridDimensions;
+    private CellDimensions cellDimensions;
     private Vector3 startingPos;
 
     private void Awake()
     {
-        width = LevelGrid.Instance.GetWidth();
-        length = LevelGrid.Instance.GetLength();
-        height = LevelGrid.Instance.GetHeight();
-        cellsize = LevelGrid.Instance.GetCellSize();
+        gridDimensions.width= LevelGrid.Instance.GetWidth();
+        gridDimensions.length = LevelGrid.Instance.GetLength();
+        gridDimensions.height = LevelGrid.Instance.GetHeight();
+        cellDimensions = LevelGrid.Instance.GetCellSize();
         startingPos = LevelGrid.Instance.GetStartPos();
 
-        gridSystem = new GridSystem<PathNode>(width, length, height, cellsize, startingPos, 
+        gridSystem = new GridSystem<PathNode>(gridDimensions, cellDimensions, startingPos, 
                                 (GridSystem<PathNode> g,GridPosition gridPosition) => new PathNode(gridPosition));
         gridSystem.CreateDebugObjects(gridDebugObjectPrefab);   
     }

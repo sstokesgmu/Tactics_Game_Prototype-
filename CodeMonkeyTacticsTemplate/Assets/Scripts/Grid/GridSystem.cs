@@ -8,25 +8,23 @@ namespace Grid
 {
     public class GridSystem<TGridObject> 
     {
-        private readonly int width;
-        private readonly int length;
-        private readonly int height;
-        private readonly Vector3 cellSize;
+        private readonly GridDimensions gridDimensions;
+        private readonly CellDimensions cellDimensions;
         private readonly Vector3 startPos;
         private TGridObject[,,] gridObjectArray;
 
-        public GridSystem(int width, int length, int height, Vector3 cellSize, Vector3 startPos, 
-            Func<GridSystem<TGridObject>, GridPosition, TGridObject> createGridObject) {
-            this.width = width;//x
-            this.height = height + 1;// y
-            this.length = length;// z
-            this.cellSize = cellSize;
+        public GridSystem(GridDimensions gridDimensions, CellDimensions cellDimensions, Vector3 startPos, 
+            Func<GridSystem<TGridObject>, GridPosition, TGridObject> createGridObject)
+        {
+            gridDimensions.height += 1;
+            this.gridDimensions = gridDimensions;
+            this.cellDimensions = cellDimensions;
             this.startPos = startPos;
-            gridObjectArray = new TGridObject[width, this.height ,length];
+            gridObjectArray = new TGridObject[gridDimensions.width,gridDimensions.height,gridDimensions.length];
             //Loop through the width, length, and height and create a grid position and grid object add the the array location
-            for (int x = 0; x < width; x++) {
-                for (int z = 0;  z < length; z++) {
-                    for (int y = 0; y < height; y++) {
+            for (int x = 0; x < gridDimensions.width; x++) {
+                for (int z = 0;  z < gridDimensions.length; z++) {
+                    for (int y = 0; y < gridDimensions.height; y++) {
                         GridPosition gridPosition = new GridPosition(x, y, z);
                         gridObjectArray[x,y,z] = createGridObject(this, gridPosition);
                     }
@@ -36,7 +34,8 @@ namespace Grid
         //Grid Validation
         public bool IsValidGridPosition(GridPosition gridPosition) {
             return gridPosition.x >= 0 && gridPosition.z >= 0 && gridPosition.y >= 0
-                   && gridPosition.x < width && gridPosition.z < length && gridPosition.y < height; }
+                   && gridPosition.x < gridDimensions.width && gridPosition.z < gridDimensions.length && 
+                   gridPosition.y < gridDimensions.height; }
         //Get Grid Position
         public TGridObject GetGridObjet(GridPosition gridPosition) {
             return gridObjectArray[gridPosition.x, gridPosition.y, gridPosition.z]; }
@@ -58,17 +57,17 @@ namespace Grid
         public Vector3 GetWorldPosition(GridPosition gridPos)
         {
             return new Vector3(
-                gridPos.x * cellSize.x + startPos.x, 
-                gridPos.y * cellSize.y + startPos.y, 
-                gridPos.z * cellSize.z + startPos.z
+                gridPos.x * cellDimensions.x + startPos.x, 
+                gridPos.y * cellDimensions.y + startPos.y, 
+                gridPos.z * cellDimensions.z + startPos.z
             );
         }
         // Convert World position to Grid position
         public GridPosition GetGridPosition(Vector3 worldPosition) {
             return new GridPosition(
-                Mathf.RoundToInt((worldPosition.x - startPos.x) / cellSize.x),
-                Mathf.RoundToInt((worldPosition.y - startPos.y) / cellSize.y),
-                Mathf.RoundToInt((worldPosition.z - startPos.z) / cellSize.z)
+                Mathf.RoundToInt((worldPosition.x - startPos.x) / cellDimensions.x),
+                Mathf.RoundToInt((worldPosition.y - startPos.y) / cellDimensions.y),
+                Mathf.RoundToInt((worldPosition.z - startPos.z) / cellDimensions.z)
             );
         }
         //Convert Grid Position to World Position List
@@ -76,9 +75,9 @@ namespace Grid
             List<Vector3> posList = new List<Vector3>();    
             foreach (GridPosition gridPos in gridPosition ) {
                 posList.Add(new Vector3(
-                    gridPos.x * cellSize.x + startPos.x, 
-                    gridPos.y * cellSize.y + startPos.y, 
-                    gridPos.z * cellSize.z + startPos.z)); 
+                    gridPos.x * cellDimensions.x + startPos.x, 
+                    gridPos.y * cellDimensions.y + startPos.y, 
+                    gridPos.z * cellDimensions.z + startPos.z)); 
             } 
             return posList;
         } 
@@ -87,21 +86,22 @@ namespace Grid
             List<GridPosition> gridPosList = new List<GridPosition>(); 
             foreach (Vector3 worldPos in worldPositions) {
                 gridPosList.Add(new GridPosition(
-                    Mathf.RoundToInt((worldPos.x - startPos.x) / cellSize.x),
-                    Mathf.RoundToInt((worldPos.y - startPos.y) / cellSize.y),
-                    Mathf.RoundToInt((worldPos.z - startPos.z) / cellSize.z)));
+                    Mathf.RoundToInt((worldPos.x - startPos.x) / cellDimensions.x),
+                    Mathf.RoundToInt((worldPos.y - startPos.y) / cellDimensions.y),
+                    Mathf.RoundToInt((worldPos.z - startPos.z) / cellDimensions.z)));
             } 
             return gridPosList; 
         }
-        public int GetWidth() => width;
-        public int GetLength() => length;
-        public int GetHeight() => height;
-        public Vector3 GetCellSize() => cellSize;
+        public int GetWidth() => gridDimensions.width;
+        public int GetLength() => gridDimensions.length;
+        public int GetHeight() => gridDimensions.height;
+        public GridDimensions GetGridDimensions() => gridDimensions;
+        public CellDimensions GetCellSize() => cellDimensions;
         public Vector3 GetStartingPos() => startPos;
         public void CreateDebugObjects(Transform debugPrefab) { 
-            for (int x = 0; x < width; x++) { 
-                for (int z = 0; z < length; z++) { 
-                    for (int y = 0; y < height; y++) 
+            for (int x = 0; x < gridDimensions.width; x++) { 
+                for (int z = 0; z < gridDimensions.length; z++) { 
+                    for (int y = 0; y < gridDimensions.height; y++) 
                     {
                         GridPosition gridPosition = new GridPosition(x, y, z);
                         Transform debugTransform = GameObject.Instantiate(debugPrefab, GetWorldPosition(gridPosition), debugPrefab.rotation);

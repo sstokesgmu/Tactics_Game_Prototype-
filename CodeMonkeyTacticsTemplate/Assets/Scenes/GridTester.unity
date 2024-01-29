@@ -425,6 +425,21 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 8679478588913314152, guid: a2ebbef009a639b45b98f41cfb8f4df0,
         type: 3}
+      propertyPath: cellDimensions.x
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 8679478588913314152, guid: a2ebbef009a639b45b98f41cfb8f4df0,
+        type: 3}
+      propertyPath: cellDimensions.y
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 8679478588913314152, guid: a2ebbef009a639b45b98f41cfb8f4df0,
+        type: 3}
+      propertyPath: cellDimensions.z
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 8679478588913314152, guid: a2ebbef009a639b45b98f41cfb8f4df0,
+        type: 3}
       propertyPath: useCharacterHeight
       value: 0
       objectReference: {fileID: 0}
@@ -435,12 +450,27 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 8679478588913314152, guid: a2ebbef009a639b45b98f41cfb8f4df0,
         type: 3}
+      propertyPath: gridDimensions.width
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 8679478588913314152, guid: a2ebbef009a639b45b98f41cfb8f4df0,
+        type: 3}
       propertyPath: cellDimensions.height
       value: 2
       objectReference: {fileID: 0}
     - target: {fileID: 8679478588913314152, guid: a2ebbef009a639b45b98f41cfb8f4df0,
         type: 3}
       propertyPath: cellDimensions.length
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 8679478588913314152, guid: a2ebbef009a639b45b98f41cfb8f4df0,
+        type: 3}
+      propertyPath: gridDimensions.height
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 8679478588913314152, guid: a2ebbef009a639b45b98f41cfb8f4df0,
+        type: 3}
+      propertyPath: gridDimensions.length
       value: 2
       objectReference: {fileID: 0}
     m_RemovedComponents: []
