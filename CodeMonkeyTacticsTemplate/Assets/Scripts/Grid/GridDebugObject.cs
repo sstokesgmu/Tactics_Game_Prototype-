@@ -3,18 +3,14 @@ using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
 
-public class GridDebugObject : MonoBehaviour
+namespace Grid
 {
-    [SerializeField] private TextMeshPro textMeshPro;
-
-    private GridObject gridObject;
-    public void SetGridObject(GridObject gridObject)
+    public class GridDebugObject : MonoBehaviour
     {
-        this.gridObject = gridObject;
-    }
-
-    private void Update()
-    {
-        // textMeshPro.text = gridObject.ToString();   
+        [SerializeField] private TextMeshPro textMeshPro;
+        private GridObject gridObject;
+        public void SetGridObject(GridObject gridObject) {
+            this.gridObject = gridObject;
+        } 
     }
 }

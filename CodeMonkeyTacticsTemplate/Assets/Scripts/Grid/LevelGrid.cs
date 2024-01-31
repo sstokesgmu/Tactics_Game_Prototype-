@@ -6,11 +6,11 @@ using UnityEngine.Serialization;
 
 namespace Grid
 {
-    [System.Serializable] public struct GridDimensions {
+    [Serializable] public struct GridDimensions {
         public int length, width;
         [Tooltip("The height of the grid. Increase this number to increase the height of the grid.")]
         public int height; }
-    [System.Serializable] public struct CellDimensions {
+    [Serializable] public struct CellDimensions {
         [Tooltip("The size to a grid cell in a particular axis")]
         public int x, y, z; }
     
@@ -33,7 +33,7 @@ namespace Grid
                 Destroy(Instance);
                 return; }
             Instance = this;
-            //We should get the height of the basic character
+            //Use the height of the basic character
             if (unitPrefab != null) {
                 basicCharacter = unitPrefab.GetComponent<CapsuleCollider>();
                 if(useCharacterHeight)
