@@ -17,7 +17,8 @@ public class Unit : MonoBehaviour
 
     private GridPosition gridPosition;
     private HealthSystem healthSystem;
-    private BaseAction[] baseActionArray;
+    private BaseAction[] baseActionArray;  
+    
 
 
 
@@ -56,38 +57,19 @@ public class Unit : MonoBehaviour
 
 
     #region Getter Functions
-    public T GetAction<T>() where T : BaseAction
-    {
-        foreach (BaseAction action in baseActionArray)
-        {
-            if (action is T)
-            {
-                return (T)action;
-            }
+    //Generic Func to get all actions a Unit can have 
+    public TAction GetAction<TAction>() where TAction : BaseAction {
+        foreach (BaseAction action in baseActionArray) {
+            if (action is TAction) 
+                return (TAction)action;
         }
         return null;
     }
-    public GridPosition GetGridPosition()
-    {
-        return gridPosition;
-    }
-
-    public BaseAction[] GetBaseActionArray()
-    {
-        return baseActionArray;
-    }
-    public int GetMaxActionPoints()
-    {
-        return MAX_ACTION_POINTS;
-    }
-    public int GetActionPoints()
-    {
-        return actionPoints;
-    }
-    public Vector3 GetWorldPosition()
-    {
-        return this.transform.position;
-    }
+    public GridPosition GetGridPosition() { return gridPosition; }
+    public BaseAction[] GetBaseActionArray() { return baseActionArray; }
+    public int GetMaxActionPoints() { return MAX_ACTION_POINTS; }
+    public int GetActionPoints() { return actionPoints; }
+    public Vector3 GetWorldPosition() { return this.transform.position; }
     #endregion
 
     #region Event Functions
